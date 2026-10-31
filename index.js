@@ -1,5 +1,5 @@
 import express from 'express'
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import 'dotenv/config'
 import cors from 'cors'
 
@@ -38,6 +38,24 @@ app.post('/add-destination', async(req, res) => {
 app.get('/destinations', async (req, res) => {
     const result = await destinationCollection.find().toArray()
     res.send(result)
+})
+
+app.get('/destination/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const result = await destinationCollection.findOne({ _id: new ObjectId(id) });
+
+  res.send(result);
+})
+
+app.patch('/destination/:id', async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+  const result = await destinationCollection.updateOne(
+    { _id: new ObjectId(id) },
+    {$set: updateData}
+  )
+  res.json(result);
 })
 
 app.get('/', (req, res) => {
